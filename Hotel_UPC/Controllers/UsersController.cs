@@ -35,6 +35,68 @@ namespace Hotel_UPC.Controllers
             }
             return View(user);
         }
+        // GET: Users/Register
+        public ActionResult Register()
+        {
+            ViewBag.UserTypeId = new SelectList(db.UserTypes, "ID", "Description");
+            return View();
+        }
+        // POST: Users/Register
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register([Bind(Include = "ID,UserTypeId,Email,Name,Document,Password,IsForeign,DoB")] User user)
+        {
+            if (ModelState.IsValid)
+            {
+                var ut = from t in db.UserTypes
+                         where t.Description.ToLower()
+                         == "customer"
+                         select t;
+                UserType objUserType = ut.FirstOrDefault();
+                user.UserTypeId = objUserType.ID;
+                db.Users.Add(user);
+                db.SaveChanges();
+                return RedirectToAction("Login");
+            }
+
+            
+            return View(user);
+        }
+        // GET: Users/Login
+        public ActionResult Login()
+        {
+            ViewBag.UserTypeId = new SelectList(db.UserTypes, "ID", "Description");
+            return View();
+        }
+        // POST: Users/Login
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login([Bind(Include = "Email,Password")] User user)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var ut = from t in db.Users
+                         where t.Email.ToLower()==user.Email.ToLower()&& t.Password==user.Password
+                         select t;
+                User objUser = ut.FirstOrDefault();
+                if (objUser!=null)
+                {
+                   
+                }
+                else
+                {
+                    ViewBag.ErrorMessage="ERROR";
+                }
+            }
+            
+           
+            return View(user);
+        }
 
         // GET: Users/Create
         public ActionResult Create()
@@ -52,9 +114,16 @@ namespace Hotel_UPC.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var ut = from t in db.UserTypes
+                         where t.Description.ToLower()
+                         == "customer"
+                         select t;
+                UserType objUserType = ut.FirstOrDefault();
+                user.UserTypeId = objUserType.ID;
                 db.Users.Add(user);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Login");
             }
 
             ViewBag.UserTypeId = new SelectList(db.UserTypes, "ID", "Description", user.UserTypeId);
