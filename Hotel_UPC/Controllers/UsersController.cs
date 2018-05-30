@@ -86,7 +86,8 @@ namespace Hotel_UPC.Controllers
                 User objUser = ut.FirstOrDefault();
                 if (objUser!=null)
                 {
-                   
+                    Session["User"] = objUser;
+                    return RedirectToAction("AvailableRooms", "Rooms");
                 }
                 else
                 {
@@ -96,6 +97,15 @@ namespace Hotel_UPC.Controllers
             
            
             return View(user);
+        }
+        //
+        // POST: /Account/LogOff
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff()
+        {
+            Session.Clear();
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Users/Create
