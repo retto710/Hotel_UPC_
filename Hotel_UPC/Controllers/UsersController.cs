@@ -7,20 +7,21 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Hotel_UPC.Models;
+using Hotel_UPC.Authorization;
+using System.Web.Security;
 
 namespace Hotel_UPC.Controllers
 {
+    [UserLoggedOn]
     public class UsersController : Controller
     {
         private HotelUPCEntitiesContext db = new HotelUPCEntitiesContext();
-
         // GET: Users
         public ActionResult Index()
         {
             var users = db.Users.Include(u => u.UserType);
             return View(users.ToList());
         }
-
         // GET: Users/Details/5
         public ActionResult Details(int? id)
         {
@@ -35,6 +36,7 @@ namespace Hotel_UPC.Controllers
             }
             return View(user);
         }
+        [AllowAnonymous]
         // GET: Users/Register
         public ActionResult Register()
         {
@@ -64,6 +66,7 @@ namespace Hotel_UPC.Controllers
             
             return View(user);
         }
+        [AllowAnonymous]
         // GET: Users/Login
         public ActionResult Login()
         {
@@ -87,6 +90,7 @@ namespace Hotel_UPC.Controllers
                 if (objUser!=null)
                 {
                     Session["User"] = objUser;
+                    
                     return RedirectToAction("AvailableRooms", "Rooms");
                 }
                 else
